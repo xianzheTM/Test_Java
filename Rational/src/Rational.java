@@ -3,12 +3,12 @@ public class Rational {
     private int denominator;
 
     public Rational(int molecule, int denominator) {
-        this.molecule=molecule;
-        this.denominator=denominator;
-        simplify(this.molecule,this.denominator);
+        this.molecule = molecule;
+        this.denominator = denominator;
+        simplify(this.molecule, this.denominator);
     }
 
-    private void simplify(int molecule,int denominator){
+    private void simplify(int molecule, int denominator) {//化简分数形式
         boolean flag = true;
         if (molecule < 0) {
             molecule = -molecule;
@@ -25,6 +25,18 @@ public class Rational {
             this.molecule = molecule / getGCF(molecule, denominator);
             this.denominator = denominator / getGCF(molecule, denominator);
         }
+    }
+
+    private void reversesimplify(Rational number) {//用于将两个分数通分,将结果保存在backup中
+        int tempthisdenominator = this.denominator;
+        int tempnumberdenominator = number.getDenominator();
+        this.denominator=this.getLCM(this.denominator, number.getDenominator());
+        number.setDenominator(this.denominator);
+        // 统一两个分数的分母
+
+        this.molecule=(this.denominator / tempthisdenominator) * this.molecule;
+        number.setMolecule((number.getDenominator() / tempnumberdenominator) * number.getMolecule());
+        //计算各自的分子
     }
     public int getMolecule() {
         return molecule;
@@ -61,29 +73,42 @@ public class Rational {
     }// 最小公倍数
 
     public Rational add(Rational number) {
-        int tempthisdenominator = this.denominator;
-        int tempnumberdenominator = number.getDenominator();
-        this.denominator = this.getLCM(this.denominator, number.getDenominator());
-        number.setDenominator(this.denominator);
-        // 统一两个分数的分母
-
-        this.molecule = (this.denominator / tempthisdenominator) * this.molecule;
-        number.setMolecule((number.getDenominator() / tempnumberdenominator) * number.getMolecule());
-
-        this.molecule = this.molecule + number.getMolecule();
-
+        reversesimplify(number);
+        this.molecule=this.molecule + number.getMolecule();
         return this;
     }
 
-    public void printRational(Rational number) {
-        if (number.getMolecule() == 0) {
+    public Rational sub(Rational number) {
+        reversesimplify(number);
+        this.molecule=this.molecule - number.getMolecule();
+        return this;
+    }
+
+    public Rational mul(Rational number) {
+        this.molecule=this.molecule * number.getMolecule();
+        this.denominator=this.denominator * number.getDenominator();
+        return this;
+    }
+
+    public Rational div(Rational number) {
+        this.molecule=this.molecule * number.getDenominator();
+        this.denominator=this.denominator * number.getMolecule();
+        return this;
+    }
+
+    public void printRational() {
+        if (this.getMolecule() == 0) {
             System.out.println("0");
         }
-        if (number.getMolecule() % this.getDenominator() == 0) {
-            System.out.println(number.getMolecule() / this.getDenominator());
+        if (this.getMolecule() % this.getDenominator() == 0) {
+            System.out.println(this.getMolecule() / this.getDenominator());
         }
-        simplify(number.getMolecule(),getDenominator());
-        System.out.println(number.getMolecule() + "/" + getDenominator());
+        simplify(this.getMolecule(), this.getDenominator());
+        System.out.println(this.getMolecule() + "/" + getDenominator());
+    }
 
+    public void printReal() {
+        simplify(this.getMolecule(), this.getDenominator());
+        System.out.println((double)this.getMolecule() / getDenominator());
     }
 }
